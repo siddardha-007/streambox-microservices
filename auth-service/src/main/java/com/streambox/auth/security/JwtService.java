@@ -1,5 +1,6 @@
 package com.streambox.auth.security;
 
+import com.streambox.auth.service.CustomUserDetails;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.Jwts;
@@ -31,7 +32,16 @@ public class JwtService {
 
     public String generateToken(UserDetails userDetails) {
 
+        CustomUserDetails customUserDetails =
+                (CustomUserDetails) userDetails;
+
         Map<String, Object> claims = new HashMap<>();
+
+        claims.put("userId", customUserDetails.getId());
+        claims.put("role", customUserDetails.getAuthorities()
+                .iterator()
+                .next()
+                .getAuthority());
 
         return Jwts.builder()
                 .claims(claims)
@@ -49,6 +59,14 @@ public class JwtService {
         return extractClaim(
                 token,
                 Claims::getSubject
+        );
+    }
+
+    public Long extractUserId(String token) {
+
+        return extractClaim(
+                token,
+                claims -> claims.get("userId", Long.class)
         );
     }
 
