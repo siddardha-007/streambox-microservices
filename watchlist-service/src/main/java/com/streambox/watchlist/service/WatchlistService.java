@@ -6,6 +6,7 @@ import com.streambox.watchlist.entity.Watchlist;
 import com.streambox.watchlist.repository.WatchlistRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -48,6 +49,28 @@ public class WatchlistService {
                 .stream()
                 .map(this::mapToResponse)
                 .toList();
+    }
+
+
+    @Transactional
+    public void removeFromWatchlist(
+            Long userId,
+            Long movieId
+    ) {
+
+        if (!watchlistRepository.existsByUserIdAndMovieId(
+                userId,
+                movieId
+        )) {
+            throw new RuntimeException(
+                    "Movie not found in watchlist"
+            );
+        }
+
+        watchlistRepository.deleteByUserIdAndMovieId(
+                userId,
+                movieId
+        );
     }
 
     //helper
