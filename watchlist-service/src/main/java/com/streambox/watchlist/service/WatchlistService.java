@@ -1,6 +1,8 @@
 package com.streambox.watchlist.service;
 
+import com.streambox.watchlist.client.MovieClient;
 import com.streambox.watchlist.dto.AddToWatchlistRequest;
+import com.streambox.watchlist.dto.MovieResponse;
 import com.streambox.watchlist.dto.WatchlistResponse;
 import com.streambox.watchlist.entity.Watchlist;
 import com.streambox.watchlist.repository.WatchlistRepository;
@@ -16,10 +18,15 @@ import java.util.List;
 public class WatchlistService {
     private final WatchlistRepository watchlistRepository;
 
+    private final MovieClient movieClient;
+
     public WatchlistResponse addToWatchlist(
             Long userId,
             AddToWatchlistRequest request
     ) {
+
+        MovieResponse movie =
+                movieClient.getMovieById(request.movieId());
 
         if (watchlistRepository.existsByUserIdAndMovieId(
                 userId,
