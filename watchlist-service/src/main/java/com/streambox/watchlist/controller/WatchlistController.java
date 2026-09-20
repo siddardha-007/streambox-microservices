@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,12 +20,17 @@ public class WatchlistController {
 
     @PostMapping
     public ResponseEntity<WatchlistResponse> addToWatchlist(
-            @RequestParam Long userId,
+            Authentication authentication,
             @Valid @RequestBody AddToWatchlistRequest request
     ) {
 
+        Long userId = (Long) authentication.getPrincipal();
+
         WatchlistResponse response =
-                watchlistService.addToWatchlist(userId, request);
+                watchlistService.addToWatchlist(
+                        userId,
+                        request
+                );
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -33,8 +39,10 @@ public class WatchlistController {
 
     @GetMapping
     public ResponseEntity<List<WatchlistResponse>> getUserWatchlist(
-            @RequestParam Long userId
+            Authentication authentication
     ) {
+
+        Long userId = (Long) authentication.getPrincipal();
 
         return ResponseEntity.ok(
                 watchlistService.getUserWatchlist(userId)
@@ -43,9 +51,11 @@ public class WatchlistController {
 
     @DeleteMapping("/{movieId}")
     public ResponseEntity<Void> removeFromWatchlist(
-            @RequestParam Long userId,
+            Authentication authentication,
             @PathVariable Long movieId
     ) {
+
+        Long userId = (Long) authentication.getPrincipal();
 
         watchlistService.removeFromWatchlist(
                 userId,
