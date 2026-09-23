@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 @FeignClient(
         name = "movie-service",
-        url = "${movie-service.url}",
         configuration = FeignConfig.class
 )
 public interface MovieClient {
