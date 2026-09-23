@@ -1,5 +1,6 @@
 package com.streambox.watchlist.security;
 
+import jakarta.servlet.DispatcherType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,6 +31,7 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(auth ->
                         auth
+                                .dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
                                 .anyRequest()
                                 .authenticated()
                 )
