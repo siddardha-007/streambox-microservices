@@ -5,7 +5,8 @@ import com.streambox.watchlist.dto.AddToWatchlistRequest;
 import com.streambox.watchlist.dto.MovieResponse;
 import com.streambox.watchlist.dto.WatchlistResponse;
 import com.streambox.watchlist.entity.Watchlist;
-import com.streambox.watchlist.exception.MovieAlreadyExistsException;
+import com.streambox.watchlist.exception.DuplicateWatchlistException;
+import com.streambox.watchlist.exception.WatchlistNotFoundException;
 import com.streambox.watchlist.repository.WatchlistRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -33,7 +34,7 @@ public class WatchlistService {
                 userId,
                 request.movieId()
         )) {
-            throw new MovieAlreadyExistsException(
+            throw new DuplicateWatchlistException(
                     "Movie already exists in watchlist"
             );
         }
@@ -70,7 +71,7 @@ public class WatchlistService {
                 userId,
                 movieId
         )) {
-            throw new RuntimeException(
+            throw new WatchlistNotFoundException(
                     "Movie not found in watchlist"
             );
         }
