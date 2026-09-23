@@ -5,6 +5,7 @@ import com.streambox.history.dto.HistoryRequest;
 import com.streambox.history.dto.HistoryResponse;
 import com.streambox.history.dto.MovieResponse;
 import com.streambox.history.entity.History;
+import com.streambox.history.exception.HistoryNotFoundException;
 import com.streambox.history.repository.HistoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -72,7 +73,7 @@ public class HistoryService {
                 historyRepository
                         .findByUserIdAndMovieId(userId, movieId)
                         .orElseThrow(() ->
-                                new RuntimeException(
+                                new HistoryNotFoundException(
                                         "Movie not found in history"
                                 )
                         );
