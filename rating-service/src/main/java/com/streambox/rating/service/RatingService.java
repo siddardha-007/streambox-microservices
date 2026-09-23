@@ -5,6 +5,8 @@ import com.streambox.rating.dto.CreateRatingRequest;
 import com.streambox.rating.dto.MovieResponse;
 import com.streambox.rating.dto.RatingResponse;
 import com.streambox.rating.entity.Rating;
+import com.streambox.rating.exception.DuplicateRatingException;
+import com.streambox.rating.exception.RatingNotFoundException;
 import com.streambox.rating.repository.RatingRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -32,7 +34,7 @@ public class RatingService {
                 userId,
                 request.movieId()
         )) {
-            throw new RuntimeException(
+            throw new DuplicateRatingException(
                     "You have already rated this movie"
             );
         }
@@ -75,7 +77,7 @@ public class RatingService {
         Rating rating = ratingRepository
                 .findByUserIdAndMovieId(userId, movieId)
                 .orElseThrow(() ->
-                        new RuntimeException("Rating not found")
+                        new RatingNotFoundException("Rating not found for this movie")
                 );
 
         rating.setScore(request.score());
@@ -94,7 +96,7 @@ public class RatingService {
         Rating rating = ratingRepository
                 .findByUserIdAndMovieId(userId, movieId)
                 .orElseThrow(() ->
-                        new RuntimeException("Rating not found")
+                        new RatingNotFoundException("Rating not found for this movie")
                 );
 
         ratingRepository.delete(rating);
