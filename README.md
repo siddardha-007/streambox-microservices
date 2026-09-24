@@ -500,6 +500,13 @@ The following components are currently implemented and working:
 * [x] OpenFeign communication
 * [x] Movie validation through Movie Service
 * [x] All current REST APIs tested successfully
+* [x] Security and integration testing
+* [x] Common exception handling
+* [x] Eureka Service Discovery
+* [x] API Gateway
+* [x] Service-to-service communication through service discovery
+* [x] Netflix Eureka
+* [x] Spring Cloud Gateway
 
 ---
 
@@ -507,12 +514,9 @@ The following components are currently implemented and working:
 
 The next development stage focuses on improving the microservices infrastructure.
 
-* [ ] Security and integration testing
-* [ ] Common exception handling
-* [ ] Eureka Service Discovery
-* [ ] API Gateway
-* [ ] Service-to-service communication through service discovery
-
+* [ ] Apache Kafka
+* [ ] Event-driven architecture
+* [ ] Notification Service
 ---
 
 # Future Implementation
@@ -521,8 +525,7 @@ The following features are planned for future development:
 
 ### Infrastructure
 
-* [ ] Netflix Eureka
-* [ ] Spring Cloud Gateway
+
 * [ ] Spring Cloud Config Server
 * [ ] Docker and Docker Compose
 
