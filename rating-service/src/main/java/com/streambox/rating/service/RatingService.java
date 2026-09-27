@@ -5,8 +5,10 @@ import com.streambox.rating.dto.CreateRatingRequest;
 import com.streambox.rating.dto.MovieResponse;
 import com.streambox.rating.dto.RatingResponse;
 import com.streambox.rating.entity.Rating;
+import com.streambox.rating.event.RatingCreatedEvent;
 import com.streambox.rating.exception.DuplicateRatingException;
 import com.streambox.rating.exception.RatingNotFoundException;
+import com.streambox.rating.kafka.RatingEventProducer;
 import com.streambox.rating.repository.RatingRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,6 +22,8 @@ public class RatingService {
     private final RatingRepository ratingRepository;
 
     private final MovieClient movieClient;
+
+    private final RatingEventProducer ratingEventProducer;
 
     public RatingResponse addRating(
             Long userId,
@@ -48,6 +52,16 @@ public class RatingService {
                 .build();
 
         Rating saved = ratingRepository.save(rating);
+
+        RatingCreatedEvent event = new RatingCreatedEvent(
+                saved.getId(),
+                saved.getUserId(),
+                saved.getMovieId(),
+                saved.getScore(),
+                saved.getComment()
+        );
+
+        ratingEventProducer.publishRatingCreated(event);
 
         return mapToResponse(saved);
     }
