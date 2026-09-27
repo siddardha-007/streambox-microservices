@@ -10,6 +10,7 @@ The main goal of StreamBox is to implement and understand real-world microservic
 
 ## Architecture
 
+![StreamBox Architecture](C:\Users\SAMSUNG\OneDrive\Desktop\SpringBoot\streambox-microservices\assets\architecture.png)
 ```text
                                    +-------------------+
                                    |    React Client   |
