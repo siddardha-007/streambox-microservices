@@ -11,45 +11,61 @@ The main goal of StreamBox is to implement and understand real-world microservic
 ## Architecture
 
 ```text
-                         Client
-                           |
-                           v
-                    +--------------+
-                    | API Gateway  |
-                    +------+-------+
-                           |
-        +------------------+------------------+
-        |                  |                  |
-        v                  v                  v
- +-------------+    +-------------+    +-------------+
- | Auth        |    | Movie       |    | Watchlist   |
- | Service     |    | Service     |    | Service     |
- +------+------+    +------+------+    +------+------+
-        |                  |                  |
-        v                  v                  v
-   PostgreSQL             TMDB            PostgreSQL
-
-
-        +------------------+------------------+
-        |                  |                  |
-        v                  v                  v
- +-------------+    +-------------+    +-------------+
- | Rating      |    | History     |    | Recommendation|
- | Service     |    | Service     |    | Service      |
- +------+------+    +------+------+    +-------------+
-        |                  |
-        v                  v
-   PostgreSQL          PostgreSQL
-
-
-                    +-------------+
-                    |    Kafka    |
-                    +------+------+
-                           |
-              +------------+------------+
-              |                         |
-              v                         v
-      Notification Service     Recommendation Service
+                                   +-------------------+
+                                   |    React Client   |
+                                   | (Port 3000 / Web) |
+                                   +---------+---------+
+                                             |
+                                  HTTP / REST (JWT Bearer)
+                                             |
+                                             v
+  +-----------------------------------------------------------------------------------+
+  | API GATEWAY LAYER (Spring Cloud Gateway : 8080)                                   |
+  | - Central Entry Point  - Rate Limiting  - Route Management  - Global JWT Filter   |
+  +----------------------------------+------------------------------------------------+
+                                     |
+             +-----------------------+-----------------------+
+             |                                               |
+             v                                               v
+  +-----------------------+                       +-----------------------+
+  |    INFRASTRUCTURE     |                       |    INFRASTRUCTURE     |
+  |     Eureka Server     |                       |     Config Server     |
+  |  (Discovery : 8761)   |<----------------------| (Centralized Config)  |
+  +-----------+-----------+                       +-----------------------+
+              | Register / Locate
+  +-----------+-----------------------------------------------------------------------+
+  | CORE MICROSERVICES LAYER                                                          |
+  |                                                                                   |
+  |  +------------------+         +------------------+         +-------------------+  |
+  |  |   Auth Service   |         |  Movie Service   |         | Watchlist Service |  |
+  |  |    (Port 8081)   |         |   (Port 8082)    |         |    (Port 8083)    |  |
+  |  +--------+---------+         +---+----------+---+         +---+---------------+  |
+  |           |                       ^          ^                 |                  |
+  |           |                       |          +--- OpenFeign ---+                  |
+  |           |                       |                                               |
+  |  +--------+---------+         +---+--------------+         +---+---------------+  |
+  |  |  Rating Service  |         | History Service  |         |  Recommendation   |  |
+  |  |    (Port 8084)   |         |   (Port 8085)    |         | Service (Planned) |  |
+  |  +--------+---------+         +---+--------------+         +---+---------------+  |
+  |           |                       |                            ^                  |
+  |           +------ OpenFeign ------+                            |                  |
+  |                                                                |                  |
+  +-------------------+--------------------+-----------------------+------------------+
+                      |                    |                       |
+            Publish   | Event              | Publish               | Consumer
+            Events    |                    | Events                |
+                      v                    v                       |
+  +----------------------------------------------------------------+------------------+
+  | EVENT BUS / BROKER (Apache Kafka)                                                 |
+  | Topics: `user-ratings`, `watch-history`, `user-activity`                          |
+  +-----------------------------------+-----------------------------------------------+
+                                      |
+                            Consumer  | Events
+                                      v
+                          +-----------------------+
+                          | Notification Service  |
+                          |       (Planned)       |
+                          +-----------------------+
 ```
 
 > The architecture diagram represents the planned final architecture. Some infrastructure components are currently under development.
